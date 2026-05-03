@@ -1,6 +1,6 @@
 package dev.sorokin.eventmanager.converter.locations;
 
-import dev.sorokin.eventmanager.dto.LocationsDto;
+import dev.sorokin.eventmanager.dto.locations.LocationsDto;
 import dev.sorokin.eventmanager.model.Locations;
 import org.springframework.stereotype.Component;
 

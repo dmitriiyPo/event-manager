@@ -1,7 +1,7 @@
 package dev.sorokin.eventmanager.controller;
 
 import dev.sorokin.eventmanager.converter.locations.LocationsDtoConverter;
-import dev.sorokin.eventmanager.dto.LocationsDto;
+import dev.sorokin.eventmanager.dto.locations.LocationsDto;
 import dev.sorokin.eventmanager.filter.LocationSearchFilter;
 import dev.sorokin.eventmanager.model.Locations;
 import dev.sorokin.eventmanager.service.LocationsService;

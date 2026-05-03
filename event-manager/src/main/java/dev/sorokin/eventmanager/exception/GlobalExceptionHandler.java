@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -63,6 +65,26 @@ public class GlobalExceptionHandler {
         var errorDto = new ErrorMessageResponse("Server error", e.getMessage(), LocalDateTime.now());
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(errorDto);
+    }
+
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorMessageResponse> handleAuthorizationException(AuthorizationDeniedException e) {
+        logger.error("Handle authorization exception", e);
+        var errorDto = new ErrorMessageResponse("Forbidden", e.getMessage(), LocalDateTime.now());
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(errorDto);
+    }
+
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorMessageResponse> handleAuthenticationException(AuthenticationException e) {
+        logger.error("Handle authentication exception", e);
+        var errorDto = new ErrorMessageResponse("Unauthorized", e.getMessage(), LocalDateTime.now());
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
                 .body(errorDto);
     }
 
