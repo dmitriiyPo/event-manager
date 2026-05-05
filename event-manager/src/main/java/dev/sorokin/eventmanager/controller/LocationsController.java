@@ -1,7 +1,7 @@
 package dev.sorokin.eventmanager.controller;
 
 import dev.sorokin.eventmanager.converter.locations.LocationsDtoConverter;
-import dev.sorokin.eventmanager.dto.LocationsDto;
+import dev.sorokin.eventmanager.dto.locations.LocationsDto;
 import dev.sorokin.eventmanager.filter.LocationSearchFilter;
 import dev.sorokin.eventmanager.model.Locations;
 import dev.sorokin.eventmanager.service.LocationsService;
@@ -30,8 +30,9 @@ public class LocationsController {
 
     @PostMapping
     public ResponseEntity<LocationsDto> createLocation(@RequestBody @Valid LocationsDto locationDto) {
-        Locations newLocation = locationsService.createLocation(locationsDtoConverter.toDomain(locationDto));
-        return ResponseEntity.status(HttpStatus.CREATED).body(locationsDtoConverter.toDto(newLocation));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(locationsDtoConverter.toDto(locationsService.createLocation(locationsDtoConverter.toDomain(locationDto))));
     }
 
 
@@ -55,8 +56,7 @@ public class LocationsController {
 
     @GetMapping("/{locationId}")
     public ResponseEntity<LocationsDto> getLocation(@PathVariable("locationId") Long locationId) {
-        Locations location = locationsService.getLocation(locationId);
-        return ResponseEntity.ok(locationsDtoConverter.toDto(location));
+        return ResponseEntity.ok(locationsDtoConverter.toDto(locationsService.getLocation(locationId)));
     }
 
 
@@ -65,8 +65,7 @@ public class LocationsController {
             @PathVariable("locationId") Long locationId,
             @RequestBody @Valid LocationsDto locationDto)
     {
-        Locations updateLocation = locationsService.updateLocation(locationId, locationsDtoConverter.toDomain(locationDto));
-        return ResponseEntity.ok(locationsDtoConverter.toDto(updateLocation));
+        return ResponseEntity.ok(locationsDtoConverter.toDto(locationsService.updateLocation(locationId, locationsDtoConverter.toDomain(locationDto))));
     }
 
 

@@ -98,7 +98,8 @@ public class LocationsService {
         }
         LocationsEntity updatedLocation = locationsEntityConverter.toEntity(location);
         updatedLocation.setId(locationId);
-        return locationsEntityConverter.toDomain(updatedLocation);
+        LocationsEntity savedLocation = locationsRepository.save(updatedLocation);
+        return locationsEntityConverter.toDomain(savedLocation);
     }
 
 

@@ -1,4 +1,4 @@
-package dev.sorokin.eventmanager.dto;
+package dev.sorokin.eventmanager.dto.locations;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.*;

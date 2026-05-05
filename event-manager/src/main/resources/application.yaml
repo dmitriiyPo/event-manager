@@ -25,6 +25,11 @@ logging:
     root: INFO
     org.springframework.web: INFO
 
+
 springdoc:
   swagger-ui:
     path: /swagger-ui/index.html
+
+jwt:
+  lifetime: 86400000
+  secret-key: T6kLsUs6AWNH+7T/Q9I7MEKJSvGjvLBx1CQRlG5F48E=
