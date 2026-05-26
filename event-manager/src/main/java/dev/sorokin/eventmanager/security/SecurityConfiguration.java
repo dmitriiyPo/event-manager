@@ -74,6 +74,34 @@ public class SecurityConfiguration {
                                         .requestMatchers(HttpMethod.GET, "/locations/search-locations")
                                         .hasAnyAuthority("ADMIN", "USER")
 
+                                        .requestMatchers(HttpMethod.POST, "/events")
+                                        .hasAnyAuthority("USER")
+
+                                        .requestMatchers(HttpMethod.POST, "/events/search")
+                                        .hasAnyAuthority("ADMIN", "USER")
+
+                                        .requestMatchers(HttpMethod.GET, "/events/my")
+                                        .hasAnyAuthority("USER")
+
+                                        .requestMatchers(HttpMethod.GET, "/events/{eventId}")
+                                        .hasAnyAuthority("ADMIN", "USER")
+
+                                        .requestMatchers(HttpMethod.PUT, "/events/**")
+                                        .hasAnyAuthority("ADMIN", "USER")
+
+                                        .requestMatchers(HttpMethod.DELETE, "/events/{eventId}")
+                                        .hasAnyAuthority("ADMIN", "USER")
+
+                                        .requestMatchers(HttpMethod.POST, "/events/registrations/{eventId}")
+                                        .hasAnyAuthority("USER")
+
+                                        .requestMatchers(HttpMethod.DELETE, "/events/registrations/cancel/{eventId}")
+                                        .hasAnyAuthority("USER")
+
+                                        .requestMatchers(HttpMethod.GET, "/events/registrations/my")
+                                        .hasAnyAuthority("USER")
+
+
 
                                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                                         .requestMatchers(HttpMethod.POST, "/users/auth").permitAll()

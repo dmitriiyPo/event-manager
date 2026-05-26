@@ -33,3 +33,7 @@ springdoc:
 jwt:
   lifetime: 86400000
   secret-key: T6kLsUs6AWNH+7T/Q9I7MEKJSvGjvLBx1CQRlG5F48E=
+
+event:
+  status:
+    cron: 0 */1 * * * *
