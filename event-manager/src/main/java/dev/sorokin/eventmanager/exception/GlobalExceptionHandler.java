@@ -59,6 +59,16 @@ public class GlobalExceptionHandler {
     }
 
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessageResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+        logger.error("Got exception", e);
+        var errorDto = new ErrorMessageResponse("Bad request.", e.getMessage(), LocalDateTime.now());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(errorDto);
+    }
+
+
     @ExceptionHandler
     public ResponseEntity<ErrorMessageResponse> handleGenerisException(Exception e) {
         logger.error("Server error", e);

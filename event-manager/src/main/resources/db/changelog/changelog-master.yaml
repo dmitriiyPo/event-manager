@@ -10,3 +10,12 @@ databaseChangeLog:
   - include:
       file: changesets/0003_create_users.sql
       relativeToChangelogFile: true
+
+  - include:
+      file: changesets/0004_create_events.sql
+      relativeToChangelogFile: true
+
+  - include:
+      file: changesets/0005_create_registrations.sql
+      relativeToChangelogFile: true
+

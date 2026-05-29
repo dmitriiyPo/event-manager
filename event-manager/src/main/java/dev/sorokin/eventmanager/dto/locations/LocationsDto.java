@@ -17,7 +17,6 @@ public record LocationsDto(
         String address,
 
         @Min(value = 5, message = "Capacity must be greater than or equal to 5")
-        @Max(500)
         @NotNull
         Integer capacity,
 

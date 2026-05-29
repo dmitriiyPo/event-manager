@@ -1,9 +1,11 @@
 package dev.sorokin.eventmanager.service;
 
 import dev.sorokin.eventmanager.converter.locations.LocationsEntityConverter;
+import dev.sorokin.eventmanager.entity.EventEntity;
 import dev.sorokin.eventmanager.entity.LocationsEntity;
 import dev.sorokin.eventmanager.filter.LocationSearchFilter;
 import dev.sorokin.eventmanager.model.Locations;
+import dev.sorokin.eventmanager.repository.EventRepository;
 import dev.sorokin.eventmanager.repository.LocationsRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,11 +26,14 @@ public class LocationsService {
 
     private final LocationsRepository locationsRepository;
     private final LocationsEntityConverter locationsEntityConverter;
+    private final EventRepository eventRepository;
+
 
     @Autowired
-    public LocationsService(LocationsRepository locationsRepository, LocationsEntityConverter locationsEntityConverter) {
+    public LocationsService(LocationsRepository locationsRepository, LocationsEntityConverter locationsEntityConverter, EventRepository eventRepository) {
         this.locationsRepository = locationsRepository;
         this.locationsEntityConverter = locationsEntityConverter;
+        this.eventRepository = eventRepository;
     }
 
 
@@ -90,28 +95,61 @@ public class LocationsService {
             rollbackFor = {EntityNotFoundException.class}
     )
     public Locations updateLocation(Long locationId, Locations location) {
-        if (!locationsRepository.existsById(locationId)) {
-            throw new EntityNotFoundException("Location with id=%s not found".formatted(locationId));
-        }
+
+        LocationsEntity foundLocation = locationsRepository.findById(locationId)
+                .orElseThrow(() -> new EntityNotFoundException("Location with id=%s not found".formatted(locationId)));
+
         if (locationsRepository.existsByName(location.name())) {
             throw new EntityExistsException("Location with name=%s already exist".formatted(location.name()));
         }
+
+        Integer newCapacity = location.capacity();
+
+        if (newCapacity < foundLocation.getCapacity()) {
+            validateCapacityForExistingEvent(locationId, newCapacity);
+        }
+
         LocationsEntity updatedLocation = locationsEntityConverter.toEntity(location);
         updatedLocation.setId(locationId);
+
         LocationsEntity savedLocation = locationsRepository.save(updatedLocation);
         return locationsEntityConverter.toDomain(savedLocation);
+    }
+
+
+    private void validateCapacityForExistingEvent(Long locationId, Integer newCapacity) {
+        List<EventEntity> events = eventRepository.findByLocationsId(locationId);
+
+        for (EventEntity event : events) {
+            if (event.getMaxPlaces() > newCapacity) {
+                throw new IllegalArgumentException("Cannot decrease location capacity to %d. Event '%s' has maxPlaces = %d"
+                        .formatted(newCapacity, event.getName(), event.getMaxPlaces()));
+            }
+
+            if (event.getOccupiedPlaces() > newCapacity) {
+                throw new IllegalStateException(
+                        "Cannot decrease location capacity to %d. Event '%s' already has %d occupied places"
+                                .formatted(newCapacity, event.getName(), event.getOccupiedPlaces()));
+            }
+        }
+
     }
 
 
     @Transactional(
             propagation = Propagation.REQUIRED,
             isolation = Isolation.REPEATABLE_READ,
-            rollbackFor = {EntityNotFoundException.class}
+            rollbackFor = {EntityNotFoundException.class, IllegalArgumentException.class}
     )
     public void deleteLocation(Long locationId) {
-        if (!locationsRepository.existsById(locationId)) {
-            throw new EntityNotFoundException("Location with id=%s not found".formatted(locationId));
+        LocationsEntity location = locationsRepository.findById(locationId)
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Location with id=%s not found".formatted(locationId)));
+
+        if (!location.getEvents().isEmpty()) {
+            throw new IllegalArgumentException("The location cannot be deleted, there are events on it.");
         }
+
         locationsRepository.deleteById(locationId);
     }
 

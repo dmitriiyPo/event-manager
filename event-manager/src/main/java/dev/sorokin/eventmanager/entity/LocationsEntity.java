@@ -1,6 +1,10 @@
 package dev.sorokin.eventmanager.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.Formula;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "locations")
@@ -22,6 +26,19 @@ public class LocationsEntity {
     @Column(name = "description")
     private String description;
 
+    @OneToMany(mappedBy = "locations", fetch = FetchType.LAZY)
+    private List<EventEntity> events = new ArrayList<>();
+
+    @Formula("""
+            (capacity - COALESCE(
+                (SELECT SUM(e.max_places)
+                 FROM events e
+                 WHERE e.location_id = id
+                 AND e.status NOT IN ('CANCELLED', 'FINISHED')),
+            0))
+            """)
+    private Integer availableCapacity;
+
 
     public LocationsEntity() {}
 
@@ -32,6 +49,19 @@ public class LocationsEntity {
         this.address = address;
         this.capacity = capacity;
         this.description = description;
+    }
+
+
+    public Integer getAvailableCapacity() {
+        return availableCapacity != null ? availableCapacity : 0;
+    }
+
+    public List<EventEntity> getEvents() {
+        return events;
+    }
+
+    public void setEvents(List<EventEntity> events) {
+        this.events = events;
     }
 
     public String getDescription() {
