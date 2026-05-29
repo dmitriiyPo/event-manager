@@ -82,9 +82,9 @@ public class EventService {
             throw new IllegalArgumentException("Date cannot be before current date.");
         }
 
-//        if (event.date().isBefore(LocalDateTime.now().plusHours(1))) {
-//            throw new IllegalArgumentException("Event must start at least 1 hour from now.");
-//        }
+        if (event.date().isBefore(LocalDateTime.now().plusHours(1))) {
+            throw new IllegalArgumentException("Event must start at least 1 hour from now.");
+        }
 
         EventEntity createToEvent = eventEntityConverter.toEntity(event);
         createToEvent.setUser(userEntity);
@@ -186,10 +186,7 @@ public class EventService {
     }
 
 
-    @Transactional(
-            propagation = Propagation.REQUIRED,
-            isolation = Isolation.REPEATABLE_READ
-    )
+    @Transactional(readOnly = true)
     public Page<Event> searchEvents(EventSearchFilter filter) {
         int pageSize = filter.pageSize() != null ? filter.pageSize() : 3;
         int pageNumber = filter.pageNumber() != null ? filter.pageNumber() : 0;

@@ -24,9 +24,19 @@ public class SchedulerForStatus {
     @Transactional
     public void updateStatuses() {
         List<EventEntity> startedEvent = eventRepository.findStartedEventsWithStatus(EventStatus.WAIT_START.name());
-        startedEvent.forEach(event -> eventRepository.changeStatus(event.getId(), EventStatus.STARTED.name()));
+
+        if (!startedEvent.isEmpty()) {
+            List<Long> ids = startedEvent.stream().map(EventEntity::getId).toList();
+            eventRepository.changeStatus(ids, EventStatus.STARTED.name());
+        }
+
 
         List<EventEntity> finished = eventRepository.findFinishedEventsWithStatus(EventStatus.STARTED.name());
-        finished.forEach(event -> eventRepository.changeStatus(event.getId(), EventStatus.FINISHED.name()));
+
+        if (!finished.isEmpty()) {
+            List<Long> ids = finished.stream().map(EventEntity::getId).toList();
+            eventRepository.changeStatus(ids, EventStatus.FINISHED.name());
+        }
     }
+
 }

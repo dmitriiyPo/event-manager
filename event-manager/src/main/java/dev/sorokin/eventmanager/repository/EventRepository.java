@@ -40,13 +40,14 @@ public interface EventRepository extends JpaRepository<EventEntity, Long> {
     """, nativeQuery = true)
     List<EventEntity> findFinishedEventsWithStatus(String status);
 
+
     @Modifying
     @Query("""
     UPDATE EventEntity e
     SET e.status = :status
-    WHERE e.id = :eventId
+    WHERE e.id IN :eventIds
     """)
-    void changeStatus(@Param("eventId") Long eventId, @Param("status") String status);
+    void changeStatus(@Param("eventIds") List<Long> eventIds, @Param("status") String status);
 
 
     @Query("""
